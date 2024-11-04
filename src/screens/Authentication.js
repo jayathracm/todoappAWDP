@@ -1,53 +1,56 @@
-import React from 'react'
-import './Authentication.css'
-import { Link, useNavigate } from 'react-router-dom'
-import { useUser } from '../context/useUser'
+import { Link,useNavigate } from "react-router-dom";
+import "./Authentication.css";
+import React from "react";
+import { useUser } from "../context/useUser";
+import { useState } from "react"
 
 export const AuthenticationMode = Object.freeze({
     Login: 'Login',
     Register: 'Register'
-})
+    });
 
-export default function Authentication(authenticationMode) {
-    const { user, setUser, signUp,signIn } = useUser()
-    const navigate = useNavigate()
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
+export default function Authentication({authenticationMode}) {
+    const { user, setUser, signUp, signIn } = useUser();
+    const [email, setEmail] = useState(user.email || ''); // Initialize to empty string
+    const Navigate = useNavigate();
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         try {
             if (authenticationMode === AuthenticationMode.Register) {
-                await signUp()
-                navigate('/signIn')
+                await signUp(); // Pass user data
+                Navigate('/signin');
             } else {
-                await signIn()
-                navigate("/")
+                await signIn(); // Pass user data
+                Navigate('/');
             }
-        } catch(error) {
-            const message = error.response && error.response.data ? error.response.data.error : error
-            alert(message)
+        }  catch (error) {
+            const message = error.response && error.response.data ? error.response.data.error: error
+            alert(message);
+            }
         }
-    }
-  return (
-    <div>
-        <h3>{authenticationMode === AuthenticationMode.Login ? 'Sign in' : 'Sign up'}</h3>
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Email</label>
-                <input type='email' value={user.email} onChange={e => setUser({...user,email: e.target.value})}/>
+        return (
+            <div className="auth-container">
+                <h3>{authenticationMode === AuthenticationMode.Login ? "Sign in" : "Sign up"}</h3>
+                <form className="auth-form" onSubmit={handleSubmit}>
+                    <div>
+                        <label>Email</label>
+                        <input type="email"  name="email" value={email} onChange={event => { setEmail(event.target.value); setUser({...user, email: event.target.value}); }}/>
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <input type="password" name="password" value={user.password} onChange={event => setUser({...user,password: event.target.value})} />
+                    </div>
+                    <div>
+                        <button>{authenticationMode === AuthenticationMode.Login ? "Login" : "Submit"}</button>
+                    </div>
+                    <div>
+                        <Link to={authenticationMode === AuthenticationMode.Login ? '../signup' : '../signin'}> 
+                        {authenticationMode === AuthenticationMode.Login ? "No account? Sign up" : "Already signed up? Sign in"}
+                        </Link>
+                    </div>
+                    </form>
             </div>
-            <div>
-                <label>Password</label>
-                <input type='password' value={user.password} onChange={e => setUser({...user,password: e.targetvalue})} />
-            </div>
-            <div>
-                <button>{authenticationMode === AuthenticationMode.Login ? 'Login' : 'Submit'}</button>
-            </div>
-            <div>
-                <Link to={authenticationMode === AuthenticationMode.Login ? 'signup' : '/signin'}>
-                    {authenticationMode === AuthenticationMode.Login ? 'No account? Sign up' : 'Already signed up? Sign in'}
-                </Link>
-            </div>
-        </form>
-    </div>
-  )
-}
+        )
+};
