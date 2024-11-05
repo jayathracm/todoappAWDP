@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Home.css';
 import axios from 'axios';
-import Rows from '../components/Rows';
+import Rows from '../components/Row.js';
 import { useUser } from '../context/useUser';
 
 
