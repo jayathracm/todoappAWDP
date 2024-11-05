@@ -1,11 +1,11 @@
-import { empty0rRows } from '../helpers/utils.js';
+import { emptyOrRows } from '../helpers/utils.js';
 import { selectAllTasks, deleteTask, insertTask } from '../models/Task.js';
 
 
 const getTasks = async (req, res, next) => {
     try {
         const result = await selectAllTasks();
-        res.status(200).json(empty0rRows(result));
+        res.status(200).json(emptyOrRows(result));
     }
     catch (error) {
         next(error);
@@ -27,8 +27,6 @@ const postTask = async (req, res, next) => {
     }
 }
 
-
-
 const  DeleteTask = async (req, res, next) => {
         try {
             const id = req.params.id;
@@ -39,7 +37,5 @@ const  DeleteTask = async (req, res, next) => {
                 next(error);
         }
 }
-
-
 
 export { getTasks, postTask, DeleteTask };

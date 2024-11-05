@@ -12,17 +12,17 @@ export const AuthenticationMode = Object.freeze({
 
 export default function Authentication({authenticationMode}) {
     const { user, setUser, signUp, signIn } = useUser();
-    const [email, setEmail] = useState(user.email || ''); // Initialize to empty string
+    const [email, setEmail] = useState(user.email || '');
     const Navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             if (authenticationMode === AuthenticationMode.Register) {
-                await signUp(); // Pass user data
+                await signUp();
                 Navigate('/signin');
             } else {
-                await signIn(); // Pass user data
+                await signIn();
                 Navigate('/');
             }
         }  catch (error) {

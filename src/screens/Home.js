@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Home.css';
 import axios from 'axios';
-import Rows from "../components/Row.js";
+import Rows from '../components/Rows';
 import { useUser } from '../context/useUser';
 
 
@@ -13,9 +13,8 @@ const url = "http://localhost:3001"
     const { user}  = useUser();
     const [tasks, setTasks] = useState([]);
     const [task, setTask] = useState('');
- 
+  
 
-// get all tasks
 useEffect(() => {
   axios.get(url)
   .then(response => {
@@ -23,30 +22,21 @@ useEffect(() => {
   })
   .catch((error) => {
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       alert(error.response.data.error ? error.response.data.error : error);
     } else if (error.request) {
-      // The request was made but no response was received
       alert("No response received from the server.");
     } else {
-      // Something happened in setting up the request that triggered an Error
       alert("Error: " + error.message);
     }
   });
 }, []);
 
-
-
-
-// add task
   const addTask = () => {
     const headers = {headers: {Authorization: user.token}};
 
    axios.post(url + '/create', {description: task}, headers)
   
   .then(response => {
-    // setTasks([...tasks, task]);
     setTasks([...tasks, { id: response.data.id, description: task }]); 
     setTask('');
   })
@@ -54,7 +44,7 @@ useEffect(() => {
     alert(error.response.data.error ? error.response.data.error : error);
   });
 }
-  // delete task
+
     const deleteTask = (id) => {
 
       const headers = {headers: {Authorization: user.token}};

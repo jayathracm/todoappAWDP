@@ -5,8 +5,6 @@ import axios from "axios";
 
 
 const url = process.env.REACT_APP_API_URL || "http://localhost:3001";
-//console.log("URL:", url);
-//console.log("URL:", url);
 
 export default function UserProvider({ children }) {
     const userFromSessionStorage = sessionStorage.getItem("user");
@@ -32,7 +30,7 @@ export default function UserProvider({ children }) {
              const { id, email, token } = response.data;
              const userData = { id, email, token };
              setUser(userData);
-             sessionStorage.setItem('user', JSON.stringify(userData)); // Save in sessionStorage
+             sessionStorage.setItem('user', JSON.stringify(userData));
          } catch(error) {
              setUser({ email: "", password: "" });
              throw error;

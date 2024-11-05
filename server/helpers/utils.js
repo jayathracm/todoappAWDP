@@ -1,6 +1,6 @@
-const empty0rRows = (result) => {
+const emptyOrRows = (result) => {
     if (!result) return []
     return result.rows
 }
 
-export { empty0rRows }
+export { emptyOrRows }

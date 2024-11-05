@@ -11,14 +11,11 @@ const router = Router();
 
 
 router.post("/register", async (req, res, next) => {
-    
-    //debuging extra line
     console.log("Register attempt:", req.body.email,{
         email: req.body.email,
         password: req.body?.password?.length
-    }); // Log the email
+    });
  
-    // Add password length validation
     if (!req.body.password || req.body.password.length < 8) {
         return res.status(400).json({ error: "Password must be at least 8 characters long" });
     }
@@ -37,7 +34,6 @@ router.post("/register", async (req, res, next) => {
                 [req.body.email, hashedPassword],
                 (error, result) => {
                     if (error) {
-                        //extra line for debugging
                         console.error("Database error during registration:", error);
                         return next(error);
                     }
@@ -49,7 +45,6 @@ router.post("/register", async (req, res, next) => {
                 }
             );
         } catch (error) {
-            //extra line for debugging
             console.error("Unexpected error during registration:", error);
             return next(error);
         }
@@ -70,7 +65,7 @@ router.post("/login", (req, res, next) => {
                 }
                 if (result.rowCount === 0) return next(new Error(invalid_message));
 
-                const user = result.rows[0]; // Assign the user data from the query result
+                const user = result.rows[0];
 
                 compare(req.body.password, user.password, (error, match) => {
                     if (error) {
