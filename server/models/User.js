@@ -1,19 +1,12 @@
-import { pool } from '../helpers/db.js'
+import { pool } from "../helpers/db";
 
-const insertUser = async (email, hashedPassword) => {
-    return await pool.query('insert into account (email,password) values ($1,$2) returning *',[email,hashedPassword])
+const insertUser = async (email, password) => {
+    return await pool.query("INSERT INTO account (email, password) VALUES ($1, $2) RETURNING *", 
+                            [email, password]);
 }
 
 const selectUserByEmail = async (email) => {
-    return await pool.query('select * from account where email=$1',[email])
+    return await pool.query("SELECT * FROM account WHERE email = $1", [email]);
 }
 
-const createUserObject = (id,email,token=undefined) => {
-    return {
-        'id':id,
-        'email':email,
-        ...(token !== undefined) && {'token':token}
-    }
-}
-
-export { insertUser, selectUserByEmail, createUserObject }
+export { insertUser, selectUserByEmail };

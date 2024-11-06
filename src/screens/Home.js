@@ -13,8 +13,7 @@ const url = "http://localhost:3001"
     const { user}  = useUser();
     const [tasks, setTasks] = useState([]);
     const [task, setTask] = useState('');
-  
-
+ 
 useEffect(() => {
   axios.get(url)
   .then(response => {
@@ -44,7 +43,6 @@ useEffect(() => {
     alert(error.response.data.error ? error.response.data.error : error);
   });
 }
-
     const deleteTask = (id) => {
 
       const headers = {headers: {Authorization: user.token}};

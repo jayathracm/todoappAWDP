@@ -1,46 +1,52 @@
-import { hash, compare } from 'bcrypt';
-import { insertUser, selectUserByEmail, createUserObject } from "../models/user.js";
-import { ApiError } from '../helpers/Apierror.js';
-import jwt from 'jsonwebtoken';
-const { sign } = jwt;
+import { hash, compare } from "bcrypt";
+import { insertUser, selectUserByEmail } from "../models/user";
+import { ApiError } from "../helpers/ApiError";
+import { sign } from "jsonwebtoken";
 
 
-const postRegistration = async (req, res, next) => {
-   
-    try{
-        if(!req.body.email || req.body.email.length === 0) 
-            return next(new ApiError(400, 'invalid email for user'));
-
-
-        if(!req.body.password || req.body.password.length < 8) 
-            return next(new ApiError(400, 'Password must be at least 8 characters long'));
-        
-        const userFromDb = await insertUser(req.body.email, hash(req.body.password, 10));
+const postRegisteration = async (req, res, next) => {
+    try {
+        if (!req.body.email || req.body.email.length === 0) {
+            return next(new ApiError('Invalid Email for user', 400));
+        }
+        if (!req.body.password || req.body.password.length < 8) {
+            return next(new ApiError('Invalid Password for user', 400));
+        }
+        const hashedPassword = await hash(req.body.password, 10);
+        const userFromDb = await insertUser(req.body.email, hashedPassword);
         const user = userFromDb.rows[0];
-        return res.status(201).json(createUserObject(user.id, user.email ));
+        return res.status(201).json(createUserObject(user.id, user.email));
+    } catch (error) {
+        return next(error);
     }
-    catch (error) {
-        next(error);
+}
+
+const createUserObject = (id, email, token=undefined) => {
+    return {
+        'id': id,
+        'email': email,
+        ...(token !== undefined && { 'token': token })
     }
-    
 }
 
 const postLogin = async (req, res, next) => {
-    const invalid_cedential_message = "Invalid Credentials";
-    try{
+    const invalid_credentials_message = "Invalid Credentials";
+    try {
         const userFromDb = await selectUserByEmail(req.body.email);
-        if(userFromDb.rows.length === 0) return next(new ApiError(invalid_cedential_message ));
+        if (userFromDb.rowCount === 0) {
+            return next(new ApiError(invalid_credentials_message, 401));
+        }
 
         const user = userFromDb.rows[0];
-        if(!await compare(req.body.password, user.password)) return next(new ApiError(invalid_cedential_message, 401 ));
+        if (!await compare(req.body.password, user.password)) {
+            return next(new ApiError(invalid_credentials_message, 401));
+        }
 
-    const token = sign(req.body.email, process.env.JWT_SECRET_KEY);
-    return res.status(200).json(createUserObject(user.id, user.email, token));
-    }
-    catch (error) {
-        next(error);
+        const token = sign(req.body.email, process.env.JWT_SECRET)
+        return res.status(200).json(createUserObject(user.id, user.email, token));
+    } catch (error) {
+        return next(error);
     }
 }
 
-
-export { postRegistration, postLogin };
+export { postRegisteration, createUserObject, postLogin };

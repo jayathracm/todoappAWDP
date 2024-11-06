@@ -8,22 +8,7 @@ const { sign } = jwt;
 const router = Router();
 
 
-
-
 router.post("/register", async (req, res, next) => {
-    console.log("Register attempt:", req.body.email,{
-        email: req.body.email,
-        password: req.body?.password?.length
-    });
- 
-    if (!req.body.password || req.body.password.length < 8) {
-        return res.status(400).json({ error: "Password must be at least 8 characters long" });
-    }
-
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ error: "Email and password are required" });
-    }
-
     hash(req.body.password, 10, (error, hashedPassword) => {
         if (error) {
             return next(error);
@@ -34,23 +19,17 @@ router.post("/register", async (req, res, next) => {
                 [req.body.email, hashedPassword],
                 (error, result) => {
                     if (error) {
-                        console.error("Database error during registration:", error);
                         return next(error);
                     }
-                    res.status(201).json({ 
-                        id: result.rows[0].id, 
-                        email: result.rows[0].email 
-                    });
+                    res.status(201).json({ id: result.rows[0].id, email: result.rows[0].email });
 
                 }
             );
         } catch (error) {
-            console.error("Unexpected error during registration:", error);
             return next(error);
         }
     });
 });
-
 
 router.post("/login", (req, res, next) => {
     const invalid_message = "Invalid Credentials";
@@ -60,6 +39,7 @@ router.post("/login", (req, res, next) => {
             "SELECT * FROM account WHERE email = $1",
             [req.body.email],
             (error, result) => {
+                console.log(req.body.email)
                 if (error) {
                     return next(error);
                 }

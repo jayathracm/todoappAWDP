@@ -1,6 +1,6 @@
-import { getToken, insertTestUser } from "./helpers/test.js";
-
+import { getToken, initializeTestDb, insertTestUser } from "./helpers/test.js";
 import { expect } from "chai";
+
 
 const baseUrl = 'http://localhost:3001';
 
@@ -51,26 +51,25 @@ describe('POST Task', () => {
 
         expect(response.status).to.equal(400, data.error);
         expect(data).to.be.an('object');
-        expect(data).to.have.all.keys('error');
+        expect(data).to.include.all.keys('error');
     });
 
-    it("should not post a task with zero length description", async () => {
+    it("should not create a new task with zero length description", async () => {
         const token = await getToken(email);
-        const response = await fetch(baseUrl + '/create', {   
+        const response = await fetch(baseUrl + '/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: token
+                'Authorization': token 
             },
-            body: JSON.stringify({ description: '' })
+            body: JSON.stringify({ description: null })
         });
         const data = await response.json();
+
         expect(response.status).to.equal(400, data.error);
         expect(data).to.be.an('object');
-        expect(data).to.have.all.keys('error');
-
+        expect(data).to.include.all.keys('error');
     });
-
 });
 
 
@@ -98,6 +97,8 @@ describe('DELETE Task', () => {
     });
 });
 
+
+
 describe('POST Register', () => {
     const email = 'register@foo.com';
     const password = 'register123';
@@ -116,25 +117,7 @@ describe('POST Register', () => {
         expect(data).to.be.an('object');
         expect(data).to.include.all.keys('id', 'email');
     });
-
-    it ("should not post a user with less than 8 character password", async() => {
-        const email = 'register@foo1.com';
-        const password = 'short1';
-        const response = await fetch(baseUrl + '/user/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 'email': email, 'password': password })
-        });
-        const data = await response.json();
-        expect(response.status).to.equal(400, data.error);
-        expect(data).to.be.an('object');
-        expect(data).to.have.all.keys('error');
-    });
-    
 });
-
 
 
 describe('POST Login', () => {

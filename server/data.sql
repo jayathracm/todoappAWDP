@@ -4,17 +4,15 @@ drop table if exists account;
 
 create table account (
     id serial primary key,
-    email varchar(50) unique not null,
-    password varchar(255) not null
+    email varchar(255) not null,
+    password varchar(255) not null,
 );
 
-
-create  table task (
+create table task (
     id serial primary key,
-    description varchar(255) not null
+    description varchar(255) not null,
 );
 
+insert into task (description) values ('Task 1');
 
-insert into task (description) values ('my test task');
-
-insert into task (description) values ('my another test task');
+insert into task (description) values ('Task 2');
